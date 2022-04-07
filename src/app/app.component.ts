@@ -10,7 +10,8 @@ import { CustomerService } from './services/customer.service'
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  products: Product[] = this.productService.getProducts();
+  products: Promise<Product[]> = this.productService.getProducts();
+  sortKey: keyof Product = "title"
 
   constructor (@Inject('welcomeMsg') public title: string,
                private productService: ProductService,

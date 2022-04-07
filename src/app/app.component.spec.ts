@@ -12,7 +12,7 @@ const welcomeMsg = 'test';
 
 class ProductServiceMock {
   getProducts() {
-    return testProducts;
+    return Promise.resolve(testProducts);
   }
   isAvailable() {
     return true;
@@ -87,7 +87,7 @@ describe('AppComponent', () => {
     const products = compiled.querySelectorAll('app-product');
     expect(products).toHaveLength(2)
     products.forEach((product: any, i) => {
-      expect(product?.data).toBe(app.products[i]);
+      expect(product?.data).toBe(testProducts[1]);
     });
   });
 

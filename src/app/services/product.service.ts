@@ -35,8 +35,12 @@ export class ProductService {
     },
   ];
 
-  getProducts(): Product[] {
-    return this.products;
+  getProducts(): Promise<Product[]> {
+    return new Promise<Product[]>(resolve => {
+      setTimeout(() => {
+        resolve(this.products)
+      })
+    })
   }
 
   isTheLast(product: Product): boolean {
