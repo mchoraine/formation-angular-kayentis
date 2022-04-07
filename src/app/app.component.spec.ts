@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AppComponent } from './app.component';
 import { Product } from './model/product';
@@ -39,7 +39,7 @@ describe('AppComponent', () => {
     const app = fixture.componentInstance;
 
     app.total = 42;
-    app.updatePrice(new Product('', '', '', 666));
+    app.updatePrice(new Product('', '', '', 666, 1));
     expect(app.total).toBe(42 + 666);
   });
 
@@ -50,9 +50,27 @@ describe('AppComponent', () => {
 
     fixture.detectChanges();
     const products = compiled.querySelectorAll('app-product');
+    expect(products).toHaveLength(3)
     products.forEach((product: any, i) => {
-      // ! FIXME: This test is hard to understand because product is an HTMLElement which does not expect a data property
       expect(product?.data).toBe(app.products[i]);
     });
   });
+
+  it(
+    'should not display product with an empty stock',
+    waitForAsync(() => {
+      const fixture = TestBed.createComponent(AppComponent);
+      const app = fixture.debugElement.componentInstance;
+      const compiled = fixture.debugElement.nativeElement;
+
+      app.products = [
+        new Product('empty', '', '', 42, 0),
+        new Product('available', '', '', 42, 10)
+      ];
+      fixture.detectChanges();
+      const products = compiled.querySelectorAll('app-product');
+      expect(products.length).toBe(1);
+      expect(products[0].data).toBe(app.products[1]);
+    })
+  );
 });

@@ -18,10 +18,9 @@
   </div>
 
   <div class="row text-center">
-    <app-product class="col-md-3 col-sm-6" [data]="products[0]" (addToBasket)="updatePrice($event)"></app-product>
-    <app-product class="col-md-3 col-sm-6" [data]="products[1]" (addToBasket)="updatePrice($event)"></app-product>
-    <app-product class="col-md-3 col-sm-6" [data]="products[2]" (addToBasket)="updatePrice($event)"></app-product>
-    <app-product class="col-md-3 col-sm-6" [data]="products[3]" (addToBasket)="updatePrice($event)"></app-product>
+    <ng-container *ngFor="let product of products">
+      <app-product class="col-md-3 col-sm-6" *ngIf="isAvailable(product)" [data]="product" (addToBasket)="updatePrice($event)"></app-product>
+    </ng-container>
   </div>
 
   <hr />

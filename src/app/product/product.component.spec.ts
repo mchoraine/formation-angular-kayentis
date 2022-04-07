@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProductComponent } from './product.component';
 import { Product } from '../model/product';
 
-const testProduct = new Product('title', 'description', 'photo', 42);
+const testProduct = new Product('title', 'description', 'photo', 42, 1);
 
 describe('ProductComponent', () => {
   let component: ProductComponent;
@@ -37,5 +37,19 @@ describe('ProductComponent', () => {
     const button = (fixture.nativeElement as HTMLElement).querySelector('button');
     button?.click();
     expect(component.addToBasket.emit).toHaveBeenCalledWith(testProduct);
+  });
+
+  it('should not add "last" class if stock > 1', () => {
+    component.data.stock = 2;
+    fixture.detectChanges();
+    const card = fixture.nativeElement.querySelector('.card');
+    expect(card.classList).not.toContain('last');
+  });
+
+  it('should add "last" class if stock == 1', () => {
+    component.data.stock = 1;
+    fixture.detectChanges();
+    const card = fixture.nativeElement.querySelector('.card');
+    expect(card.classList).toContain('last');
   });
 });

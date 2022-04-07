@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { Product } from '../model/product';
 
@@ -16,5 +16,9 @@ export class ProductComponent {
 
   addToBasketClick() {
     this.addToBasket.emit(this.data);
+  }
+
+  isLast () {
+    return this.data.stock === 1
   }
 }
