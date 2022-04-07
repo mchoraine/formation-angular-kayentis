@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 
 import { Product } from './model/product';
+import { ProductService } from './services/product.service'
+import { CustomerService } from './services/customer.service'
 
 @Component({
   selector: 'app-root',
@@ -8,46 +10,24 @@ import { Product } from './model/product';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  total = 0;
+  products: Product[] = this.productService.getProducts();
 
-  products: Product[] = [
-    {
-      title: 'Sweat homme',
-      description: '<C0D1NG_TH3_W0RLD> SWEATSHIRT CHAUD BIO À CAPUCHE - HOMME',
-      photo: 'https://s3.eu-central-1.amazonaws.com/balibart-s3/Products/5acf344514006a7fe670e2eb/Mockups/front.png',
-      price: 39,
-      stock: 2
-    },
-    {
-      title: 'Tee-Shirt homme',
-      description: 'TEE-SHIRT BIO À COL ROND - HOMME',
-      photo: 'https://s3.eu-central-1.amazonaws.com/balibart-s3/Products/5b2911e4ab33424aec592bd6/Mockups/front.png',
-      price: 19,
-      stock: 1
-    },
-    {
-      title: 'Tee-Shirt femme',
-      description: 'TEE-SHIRT BIO À COL ROND - FEMME',
-      photo: 'https://s3.eu-central-1.amazonaws.com/balibart-s3/Products/5b290d26ab33424aec592bd4/Mockups/front.png',
-      price: 19,
-      stock: 3
-    }
-  ];
+  constructor (@Inject('welcomeMsg') public title: string,
+               private productService: ProductService,
+               private customerService: CustomerService) {
 
-  constructor () {
-    console.log("AppComponent init")
-    setInterval(() => {
-      console.log("tick")
-    }, 500)
+  }
+
+  get total() {
+    return this.customerService.getTotal()
   }
 
   updatePrice(product: Product) {
-    this.total += product.price;
-    product.stock -=  1
+    this.customerService.addProduct(product)
+    this.productService.decreaseStock(product)
   }
 
   isAvailable (product: Product) {
-    console.log("AppComponent check isAvailable :", product)
-    return product.stock > 0
+    return this.productService.isAvailable(product)
   }
 }

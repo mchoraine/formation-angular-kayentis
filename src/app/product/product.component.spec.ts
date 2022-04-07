@@ -2,20 +2,28 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProductComponent } from './product.component';
 import { Product } from '../model/product';
+import { ProductService } from '../services/product.service'
 
 const testProduct = new Product('title', 'description', 'photo', 42, 1);
+
+class ProductServiceMock {
+  isTheLast = jest.fn()
+}
 
 describe('ProductComponent', () => {
   let component: ProductComponent;
   let fixture: ComponentFixture<ProductComponent>;
+  let productService: ProductService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ProductComponent],
+      providers: [{ provide: ProductService, useClass: ProductServiceMock }],
     }).compileComponents();
   });
 
   beforeEach(() => {
+    productService = TestBed.inject(ProductService);
     fixture = TestBed.createComponent(ProductComponent);
     component = fixture.componentInstance;
     component.data = testProduct;
@@ -40,6 +48,7 @@ describe('ProductComponent', () => {
   });
 
   it('should not add "last" class if stock > 1', () => {
+    jest.spyOn(productService, 'isTheLast').mockReturnValue(false);
     component.data.stock = 2;
     fixture.detectChanges();
     const card = fixture.nativeElement.querySelector('.card');
@@ -47,6 +56,7 @@ describe('ProductComponent', () => {
   });
 
   it('should add "last" class if stock == 1', () => {
+    jest.spyOn(productService, 'isTheLast').mockReturnValue(true);
     component.data.stock = 1;
     fixture.detectChanges();
     const card = fixture.nativeElement.querySelector('.card');
