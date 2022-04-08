@@ -8,6 +8,7 @@ import { ProductService } from './services/product.service'
 import { SortPipe } from './pipes/sort.pipe'
 import { registerLocaleData } from '@angular/common'
 import localeFr from '@angular/common/locales/fr';
+import { HttpClientModule } from '@angular/common/http'
 
 registerLocaleData(localeFr);
 
@@ -18,12 +19,17 @@ registerLocaleData(localeFr);
     ProductComponent,
     SortPipe
   ],
-  imports: [BrowserModule],
+  imports: [
+    BrowserModule,
+    HttpClientModule
+  ],
   providers: [
     ProductService,
     { provide: 'welcomeMsg', useValue: 'Welcome to Zenika Ecommerces' },
-    {provide: LOCALE_ID, useValue: navigator.language}
+    { provide: 'API_URL', useValue: 'http://localhost:8080/rest/' },
+    { provide: LOCALE_ID, useValue: navigator.language }
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+}

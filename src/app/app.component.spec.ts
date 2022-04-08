@@ -1,18 +1,20 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AppComponent } from './app.component';
 import { Product } from './model/product';
 import { ProductService } from './services/product.service'
 import { CustomerService } from './services/customer.service'
+import { of } from 'rxjs'
+import { SortPipe } from './pipes/sort.pipe'
 
 
 const testProducts = [new Product('', '', '', 0, 0), new Product('', '', '', 0, 0)];
 const welcomeMsg = 'test';
 
-class ProductServiceMock {
+class ProductServiceMock implements Partial<ProductService> {
   getProducts() {
-    return Promise.resolve(testProducts);
+    return of(testProducts);
   }
   isAvailable() {
     return true;
@@ -20,11 +22,16 @@ class ProductServiceMock {
   decreaseStock() {}
 }
 
-class CustomerServiceMock {
+class CustomerServiceMock implements Partial<CustomerService>{
   getTotal() {
-    return 42;
+    return of(42);
   }
-  addProduct() {}
+  getBasket() {
+    return of()
+  }
+  addProduct() {
+    return of<Product>({} as Product)
+  }
 }
 
 
@@ -35,7 +42,10 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent],
+      declarations: [
+        AppComponent,
+        SortPipe
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: ProductService, useClass: ProductServiceMock },
@@ -54,11 +64,14 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should have a total starting at 42', () => {
+  it('should have a total starting at 42', fakeAsync(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.total).toEqual(42);
-  });
+    fixture.detectChanges()
+    app.total$.subscribe((total) => {
+      expect(total).toEqual(42);
+    } )
+  }));
 
   it('should have the title bound in the header', () => {
     const fixture = TestBed.createComponent(AppComponent);
@@ -75,10 +88,10 @@ describe('AppComponent', () => {
     const compiled = fixture.debugElement.nativeElement;
 
     fixture.detectChanges();
-    expect(compiled.querySelector('header').textContent).toContain(""+customerService.getTotal());
+    expect(compiled.querySelector('header').textContent).toContain("42.00");
   });
 
-  it('should bind each product component with its product', () => {
+  it('should bind each product component with its product', waitForAsync(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     const compiled = fixture.nativeElement as HTMLElement;
@@ -87,9 +100,9 @@ describe('AppComponent', () => {
     const products = compiled.querySelectorAll('app-product');
     expect(products).toHaveLength(2)
     products.forEach((product: any, i) => {
-      expect(product?.data).toBe(testProducts[1]);
+      expect(product?.data).toEqual(testProducts[1]);
     });
-  });
+  }));
 
   it('should call addProduct and decreaseStock when updatePrice', () => {
     const fixture = TestBed.createComponent(AppComponent);
@@ -117,7 +130,7 @@ describe('AppComponent', () => {
       fixture.detectChanges();
       const products = compiled.querySelectorAll('app-product');
       expect(products.length).toBe(1);
-      expect(products[0].data).toBe(app.products[1]);
+      expect(products[0].data).toBe(testProducts[1]);
     })
   );
 });

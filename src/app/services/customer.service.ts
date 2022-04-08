@@ -1,4 +1,8 @@
-import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+
+import { HttpClient } from '@angular/common/http';
+import { Inject, Injectable } from '@angular/core';
 
 import { Product } from '../model/product';
 
@@ -6,13 +10,27 @@ import { Product } from '../model/product';
   providedIn: 'root',
 })
 export class CustomerService {
-  products: Product[] = new Array<Product>();
+  basket$: BehaviorSubject<Product[]> = new BehaviorSubject<Product[]>([]);
 
-  addProduct(product: Product): void {
-    this.products.push(product);
+  constructor(private http: HttpClient, @Inject("API_URL") private API_URL: string) {
   }
 
-  getTotal(): number {
-    return this.products.reduce((previous, next) => previous + next.price, 0);
+  getBasket(): Observable<Product[]> {
+    return this.http.get<Product[]>(this.API_URL + 'basket').pipe(
+      tap((products) => (this.basket$.next(products)))
+    );
+  }
+
+  addProduct(product: Product): Observable<unknown> {
+    return this.http.post(this.API_URL + 'basket', product).pipe(
+      tap(() => this.basket$.next([...this.basket$.getValue(), product]))
+    );
+  }
+
+  getTotal(): Observable<number> {
+    return this.basket$.pipe(
+      map(products => products.reduce((previous, next) => previous + next.price, 0))
+    )
+
   }
 }

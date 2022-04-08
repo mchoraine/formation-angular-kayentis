@@ -1,45 +1,54 @@
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import { ProductService } from './product.service';
 import { Product } from '../model/product';
+import { ProductService } from './product.service';
 
 describe('ProductService', () => {
   let service: ProductService;
+  let http: HttpTestingController;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [ProductService],
+      imports: [HttpClientTestingModule],
+      providers: [
+        ProductService,
+        { provide: 'API_URL', useValue: 'http://localhost:8080/rest/' }
+      ],
     }).compileComponents();
     service = TestBed.inject(ProductService);
+    http = TestBed.inject(HttpTestingController);
   });
 
-  it('should be created with 4 products', () => {
-    expect(service).toBeTruthy();
-    expect(service.getProducts().length).toBe(4);
+  it('should be created with 2 products', () => {
+    const mockedResponse = [new Product('abc', '', '', 0, 0), new Product('def', '', '', 0, 0)];
+    service.getProducts().subscribe((products) => {
+      expect(products.length).toBe(2);
+    });
+    http.expectOne('http://localhost:8080/rest/products').flush(mockedResponse);
   });
 
-  [
-    { stock: 0, isTheLast: false },
-    { stock: 1, isTheLast: true },
-    { stock: 2, isTheLast: false },
-    { stock: 100, isTheLast: false },
-  ].forEach(({ stock, isTheLast }) =>
-    it(`should isTheLast return ${isTheLast} if stock is ${stock}`, () => {
-      const product = new Product('', '', '', 0, stock);
-      expect(service.isTheLast(product)).toBe(isTheLast);
-    })
-  );
+  it('should isTheLast return true only if stock is 1', () => {
+    const product = new Product('', '', '', 0, 0);
+    expect(service.isTheLast(product)).toBe(false);
+    product.stock = 1;
+    expect(service.isTheLast(product)).toBe(true);
+    product.stock = 2;
+    expect(service.isTheLast(product)).toBe(false);
+    product.stock = 100;
+    expect(service.isTheLast(product)).toBe(false);
+  });
 
-  [
-    { stock: 0, isAvailable: false },
-    { stock: 1, isAvailable: true },
-    { stock: 2, isAvailable: true },
-    { stock: 100, isAvailable: true },
-  ].forEach(({ stock, isAvailable }) =>
-    it(`should isAvailable return ${isAvailable} if stock is ${stock}`, () => {
-      const product = new Product('', '', '', 0, stock);
-      expect(service.isAvailable(product)).toBe(isAvailable);
-    })
-  );
+  it('should isAvailable return false only if stock is 0', () => {
+    const product = new Product('', '', '', 0, 0);
+    expect(service.isAvailable(product)).toBe(false);
+    product.stock = 1;
+    expect(service.isAvailable(product)).toBe(true);
+    product.stock = 2;
+    expect(service.isAvailable(product)).toBe(true);
+    product.stock = 100;
+    expect(service.isAvailable(product)).toBe(true);
+  });
 
   it('should decreaseStock decrease product stock of 1', () => {
     const product = new Product('', '', '', 0, 42);

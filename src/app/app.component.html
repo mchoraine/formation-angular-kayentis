@@ -4,7 +4,7 @@
   <header class="p-5 mb-4 bg-light rounded-3">
     <h1>{{title}}</h1>
 
-    <p>Your basket amounts to {{ total | currency:'EUR'}}</p>
+    <p>Your basket amounts to {{ total$ | async | currency:'EUR'}}</p>
 
     <p><a class="btn btn-primary btn-large">See my basket</a></p>
   </header>
@@ -24,7 +24,7 @@
   </div>
 
   <div class="row text-center">
-    <ng-container *ngFor="let product of (products | async | sort:sortKey)">
+    <ng-container *ngFor="let product of (products$ | async | sort:sortKey)">
       <app-product class="col-md-3 col-sm-6" *ngIf="isAvailable(product)" [data]="product" (addToBasket)="updatePrice($event)"></app-product>
     </ng-container>
   </div>

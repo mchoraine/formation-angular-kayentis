@@ -32,7 +32,7 @@ describe('ProductComponent', () => {
 
   it('should bind title and price in the h3', () => {
     const h3Content = (fixture.nativeElement as HTMLElement).querySelector('h3')?.textContent;
-    expect(h3Content).toContain(`${testProduct.title} - ${testProduct.price}`);
+    expect(h3Content).toContain(`${testProduct.title.toUpperCase()} - €${testProduct.price}.00`);
   });
 
   it('should bind the photo url', () => {
