@@ -11,6 +11,7 @@ import localeFr from '@angular/common/locales/fr';
 import { HttpClientModule } from '@angular/common/http'
 import { RouterModule } from '@angular/router'
 import { AppRoutingModule } from './app-routing.module'
+import { FormsModule } from '@angular/forms'
 
 registerLocaleData(localeFr);
 

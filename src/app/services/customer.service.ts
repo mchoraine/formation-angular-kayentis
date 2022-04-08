@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 
 import { Product } from '../model/product';
+import { Customer } from '../model/customer'
 
 @Injectable({
   providedIn: 'root',
@@ -32,5 +33,9 @@ export class CustomerService {
       map(products => products.reduce((previous, next) => previous + next.price, 0))
     )
 
+  }
+
+  checkout (customer: Customer): Observable<unknown> {
+    return this.http.post(`${this.API_URL}basket/confirm`, customer)
   }
 }
