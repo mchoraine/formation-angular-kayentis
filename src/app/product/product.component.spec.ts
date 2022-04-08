@@ -3,8 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ProductComponent } from './product.component';
 import { Product } from '../model/product';
 import { ProductService } from '../services/product.service'
+import { RouterTestingModule } from '@angular/router/testing'
 
-const testProduct = new Product('title', 'description', 'photo', 42, 1);
+const testProduct = new Product("id", 'title', 'description', 'photo', 42, 1);
 
 class ProductServiceMock {
   isTheLast = jest.fn()
@@ -18,6 +19,7 @@ describe('ProductComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ProductComponent],
+      imports: [RouterTestingModule],
       providers: [{ provide: ProductService, useClass: ProductServiceMock }],
     }).compileComponents();
   });

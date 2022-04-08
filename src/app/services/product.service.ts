@@ -16,7 +16,7 @@ export class ProductService {
     return this.http.get<Product[]>(this.API_URL + 'products').pipe(
       map((products) => {
         return products.map((product) => {
-          return new Product(product.title, product.description, product.photo, product.price, product.stock);
+          return new Product(product.id, product.title, product.description, product.photo, product.price, product.stock);
         })
       })
     );
@@ -32,5 +32,9 @@ export class ProductService {
 
   decreaseStock(product: Product) {
     product.stock -= 1;
+  }
+
+  getProduct(id: string): Observable<Product> {
+    return this.http.get<Product>(`${this.API_URL}products/${id}`);
   }
 }

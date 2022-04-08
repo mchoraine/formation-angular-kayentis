@@ -9,19 +9,20 @@ import { SortPipe } from './pipes/sort.pipe'
 import { registerLocaleData } from '@angular/common'
 import localeFr from '@angular/common/locales/fr';
 import { HttpClientModule } from '@angular/common/http'
+import { RouterModule } from '@angular/router'
+import { AppRoutingModule } from './app-routing.module'
 
 registerLocaleData(localeFr);
 
 @NgModule({
   declarations: [
     AppComponent,
-    MenuComponent,
-    ProductComponent,
-    SortPipe
+    MenuComponent
   ],
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    AppRoutingModule
   ],
   providers: [
     ProductService,
